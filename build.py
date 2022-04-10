@@ -17,6 +17,8 @@ def get_platform():
         return 'osx'
     elif sys.platform.startswith('linux'):
         return 'linux'
+    elif sys.platform.startswith('and'):
+        return 'and'
     raise Exception('Unsupported platform ' + sys.platform)
 
 
@@ -82,7 +84,17 @@ def unity(ctx):
         UNITY_64_DLL_PATH = os.path.join(UNITY_PROJECT_PATH, 'x86_64')
         BUILDS.append({BUILD_64_BASE_PATH: UNITY_64_DLL_PATH})
 
-        BUILD_32_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'win32-dynamic', 'src', 'Release')
+    if sys.platform.startswith('and'):
+        LIBRARY_NAME = 'discord-rpc.dll'
+        BUILD_64_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'and64-dynamic', 'src', 'Release')
+        UNITY_64_DLL_PATH = os.path.join(UNITY_PROJECT_PATH, 'x86_64')
+        BUILDS.append({BUILD_64_BASE_PATH: UNITY_64_DLL_PATH})
+
+        BUILD_32_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'and32-dynamic', 'src', 'Release')
+        UNITY_32_DLL_PATH = os.path.join(UNITY_PROJECT_PATH, 'x86')
+        BUILDS.append({BUILD_32_BASE_PATH: UNITY_32_DLL_PATH})
+
+        BUILD_32_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'and32-dynamic', 'src', 'Release')
         UNITY_32_DLL_PATH = os.path.join(UNITY_PROJECT_PATH, 'x86')
         BUILDS.append({BUILD_32_BASE_PATH: UNITY_32_DLL_PATH})
 
@@ -132,6 +144,26 @@ def unreal(ctx):
         BUILDS.append({BUILD_64_BASE_PATH: UNREAL_64_DLL_PATH})
 
         BUILD_32_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'win32-dynamic', 'src', 'Release')
+        UNREAL_32_DLL_PATH = os.path.join(UNREAL_PROJECT_PATH, 'Source', 'ThirdParty', 'DiscordRpcLibrary', 'Win32')
+        BUILDS.append({BUILD_32_BASE_PATH: UNREAL_32_DLL_PATH})
+
+    if sys.platform.startswith('win'):
+        LIBRARY_NAME = 'discord-rpc.lib'
+        BUILD_64_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'win64-dynamic', 'src', 'Release')
+        UNREAL_64_DLL_PATH = os.path.join(UNREAL_PROJECT_PATH, 'Source', 'ThirdParty', 'DiscordRpcLibrary', 'Win64')
+        BUILDS.append({BUILD_64_BASE_PATH: UNREAL_64_DLL_PATH})
+
+        BUILD_32_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'win32-dynamic', 'src', 'Release')
+        UNREAL_32_DLL_PATH = os.path.join(UNREAL_PROJECT_PATH, 'Source', 'ThirdParty', 'DiscordRpcLibrary', 'Win32')
+        BUILDS.append({BUILD_32_BASE_PATH: UNREAL_32_DLL_PATH})
+
+    if sys.platform.startswith('and'):
+        LIBRARY_NAME = 'discord-rpc.lib'
+        BUILD_64_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'and64-dynamic', 'src', 'Release')
+        UNREAL_64_DLL_PATH = os.path.join(UNREAL_PROJECT_PATH, 'Source', 'ThirdParty', 'DiscordRpcLibrary', 'Win64')
+        BUILDS.append({BUILD_64_BASE_PATH: UNREAL_64_DLL_PATH})
+
+        BUILD_32_BASE_PATH = os.path.join(SCRIPT_PATH, 'builds', 'and32-dynamic', 'src', 'Release')
         UNREAL_32_DLL_PATH = os.path.join(UNREAL_PROJECT_PATH, 'Source', 'ThirdParty', 'DiscordRpcLibrary', 'Win32')
         BUILDS.append({BUILD_32_BASE_PATH: UNREAL_32_DLL_PATH})
 
@@ -287,6 +319,15 @@ def libs(clean, static, shared, skip_formatter, just_release):
         if shared:
             build_lib('win32-dynamic', generator32, dynamic_options, just_release)
             build_lib('win64-dynamic', generator64, dynamic_options, just_release)
+     if PLATFORM == 'and':
+        generator32 = 'Visual Studio 14 2015'
+        generator64 = 'Visual Studio 14 2015 Win64'
+        if static:
+            build_lib('and32-static', generator32, static_options, just_release)
+            build_lib('and64-static', generator64, static_options, just_release)
+        if shared:
+            build_lib('and32-dynamic', generator32, dynamic_options, just_release)
+            build_lib('and64-dynamic', generator64, dynamic_options, just_release)
     elif PLATFORM == 'osx':
         if static:
             build_lib('osx-static', None, static_options, just_release)
